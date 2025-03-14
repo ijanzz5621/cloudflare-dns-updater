@@ -9,6 +9,7 @@ COPY update_dns.py .
 
 # Install required dependencies
 RUN pip install requests
+RUN pip install python-dotenv
 
 # Set default environment variables (can be overridden)
 ENV UPDATE_INTERVAL=300

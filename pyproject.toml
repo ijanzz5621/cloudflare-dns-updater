@@ -6,7 +6,9 @@ authors = ["Sharizan Redzuan <sharizan_81@yahoo.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
+python-dotenv = "^1.0.1"
+requests = "^2.32.3"
 
 
 [build-system]

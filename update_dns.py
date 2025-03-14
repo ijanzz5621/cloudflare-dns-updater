@@ -3,10 +3,15 @@ import json
 import os
 import time
 
+# for local test only
+from dotenv import load_dotenv
+load_dotenv()
+
 # Cloudflare API details
 API_TOKEN = os.getenv("API_TOKEN")
 ZONE_ID = os.getenv("ZONE_ID")
 RECORD_NAME = os.getenv("RECORD_NAME")
+RECORD_NAMES = str(RECORD_NAME).split(",")
 
 # Configurable interval (default 5 minutes)
 UPDATE_INTERVAL = int(os.getenv("UPDATE_INTERVAL", 300))  # Seconds
@@ -19,9 +24,9 @@ def get_public_ip():
     return response.json()["ip"]
 
 # Get DNS record details
-def get_dns_record():
+def get_dns_record(record_name):
     headers = {"Authorization": f"Bearer {API_TOKEN}", "Content-Type": "application/json"}
-    params = {"type": "A", "name": RECORD_NAME}
+    params = {"type": "A", "name": record_name}
     response = requests.get(CLOUDFLARE_API_URL, headers=headers, params=params)
     data = response.json()
     print(data)
@@ -31,9 +36,9 @@ def get_dns_record():
     return None
 
 # Update DNS record
-def update_dns():
+def update_dns(record_name):
     public_ip = get_public_ip()
-    record = get_dns_record()
+    record = get_dns_record(record_name)
 
     if not record:
         print("DNS record not found!")
@@ -46,16 +51,17 @@ def update_dns():
     record_id = record["id"]
     update_url = f"{CLOUDFLARE_API_URL}/{record_id}"
     headers = {"Authorization": f"Bearer {API_TOKEN}", "Content-Type": "application/json"}
-    data = {"type": "A", "name": RECORD_NAME, "content": public_ip, "ttl": 300}
+    data = {"type": "A", "name": record_name, "content": public_ip, "ttl": 300}
 
     response = requests.put(update_url, headers=headers, json=data)
     if response.status_code == 200:
-        print(f"Updated {RECORD_NAME} to {public_ip}")
+        print(f"Updated {record_name} to {public_ip}")
     else:
         print("Failed to update DNS record:", response.json())
 
 if __name__ == "__main__":
     while True:
-        update_dns()
+        for record_name in RECORD_NAMES:
+            update_dns(record_name)
         print(f"Sleeping for {UPDATE_INTERVAL} seconds...\n")
         time.sleep(UPDATE_INTERVAL)
