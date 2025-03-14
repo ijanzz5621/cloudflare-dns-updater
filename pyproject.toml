@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "dns-update"
+version = "1.0.0"
+description = "To update cloudflare DNS IP address for A entry type"
+authors = ["Sharizan Redzuan <sharizan_81@yahoo.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
